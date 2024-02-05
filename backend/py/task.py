@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from collections import Counter, OrderedDict
+
 
 @dataclass
 class File:
@@ -12,22 +14,48 @@ class File:
 """
 Task 1
 """
+
+
 def leafFiles(files: list[File]) -> list[str]:
-    return []
+
+    # return [file.name for file in files if 'Folder' not in file.categories]
+    # Not sure if 'Folder' is the only category that is not a leaf file
+    parents = set()
+    for file in files:
+        if file.parent != -1:
+            parents.add(file.parent)
+    return [file.name for file in files if file.id not in parents]
 
 
 """
 Task 2
 """
+
+
 def kLargestCategories(files: list[File], k: int) -> list[str]:
-    return []
+    count = Counter()
+    for file in files:
+        count += Counter(file.categories)
+    count = sorted(count.most_common(k), key=lambda item: (-item[1], item[0]))
+    return [category for category, _ in count]
 
 
 """
 Task 3
 """
+
+
 def largestFileSize(files: list[File]) -> int:
-    return 0
+    d = {file.id: file for file in files}
+    count = Counter()
+    for file in files:
+        if file.parent != -1:
+            p_id = file.parent
+            while p_id != -1:
+                count[p_id] += file.size
+                p_id = d[p_id].parent
+
+    return max(count.values(), default=0)
 
 
 if __name__ == '__main__':
@@ -47,19 +75,11 @@ if __name__ == '__main__':
     ]
 
     assert sorted(leafFiles(testFiles)) == [
-        "Audio.mp3",
-        "Backup.zip",
-        "Code.py",
-        "Document.txt",
-        "Image.jpg",
-        "Presentation.pptx",
-        "Spreadsheet.xlsx",
-        "Spreadsheet2.xlsx",
+        "Audio.mp3", "Backup.zip", "Code.py", "Document.txt", "Image.jpg",
+        "Presentation.pptx", "Spreadsheet.xlsx", "Spreadsheet2.xlsx",
         "Video.mp4"
     ]
 
-    assert kLargestCategories(testFiles, 3) == [
-        "Documents", "Folder", "Media"
-    ]
+    assert kLargestCategories(testFiles, 3) == ["Documents", "Folder", "Media"]
 
     assert largestFileSize(testFiles) == 20992
