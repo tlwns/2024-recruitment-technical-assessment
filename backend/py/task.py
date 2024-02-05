@@ -20,10 +20,14 @@ def leafFiles(files: list[File]) -> list[str]:
 
     # return [file.name for file in files if 'Folder' not in file.categories]
     # Not sure if 'Folder' is the only category that is not a leaf file
+
     parents = set()
+
     for file in files:
+        # Add all parent directories to the set
         if file.parent != -1:
             parents.add(file.parent)
+
     return [file.name for file in files if file.id not in parents]
 
 
@@ -34,9 +38,14 @@ Task 2
 
 def kLargestCategories(files: list[File], k: int) -> list[str]:
     count = Counter()
+
     for file in files:
+        # Add the frequency of each category to the counter
         count += Counter(file.categories)
+
+    # Sort the `k` most common categories by frequency and then by name
     count = sorted(count.most_common(k), key=lambda item: (-item[1], item[0]))
+
     return [category for category, _ in count]
 
 
@@ -48,11 +57,16 @@ Task 3
 def largestFileSize(files: list[File]) -> int:
     d = {file.id: file for file in files}
     count = Counter()
+
     for file in files:
         if file.parent != -1:
+            # Add the file size to all its ancestor directories cumulatively
             p_id = file.parent
+
             while p_id != -1:
+                # Add the file size to the parent directory
                 count[p_id] += file.size
+                # Move to the up to grandparent directory
                 p_id = d[p_id].parent
 
     return max(count.values(), default=0)
