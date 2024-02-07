@@ -1,2 +1,4 @@
 Please detail the instructions to view your solution here:
-
+    # Go inside "unilectives" directory, and run the following commands (Assuming you have node installed)
+    npm i
+    npm start
